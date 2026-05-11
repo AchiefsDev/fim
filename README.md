@@ -28,20 +28,34 @@ Think of it as a **24/7 security camera for your filesystem**. If someone modifi
 
 ## ⚡ Quick Start
 
-```bash
-# Install (see full docs for your platform)
-# https://documentation.achiefs.com/#how-to-install-fim
+### Install
 
-# 1. Create a minimal configuration
-#    See the config/ directory for Linux, macOS, and Windows examples.
+Download the latest release package for your platform from the [Releases page](https://github.com/Achiefs/fim/releases).
 
-# 2. Run FIM
-fim --config /etc/fim/config/
+| Platform | Package | Install command |
+|---|---|---|
+| **Debian / Ubuntu** | `.deb` | `dpkg -i fim*.deb` |
+| **CentOS / RHEL** | `.rpm` | `yum install fim-*.rpm` |
+| **Windows** | `.msi` | `.\fim-VERSION-x64.msi /q` |
+| **macOS** | `.pkg` | `sudo installer -pkg fim*.pkg -target /` |
 
-# 3. Check your indexer (ElasticSearch / OpenSearch / Wazuh) for events
-#    Every file change generates a structured event with timestamp, user,
-#    action type, file path, and full audit trail.
-```
+### Start FIM
+
+| Platform | Command |
+|---|---|
+| **Linux** (systemd) | `systemctl start fim` |
+| **Windows** | `NET START FimService` |
+| **macOS** (launchd) | `sudo launchctl load -w /Library/LaunchDaemons/com.Achiefs.fim.launchd.plist` |
+
+### Verify
+
+After starting FIM, it begins monitoring immediately. Check for events:
+
+- **Linux:** `cat /var/lib/fim/events.json`
+- **Logs:** `cat /var/log/fim/fim.log`
+- **Test:** `touch /etc/fake_file.txt` and check the events file — then `rm /etc/fake_file.txt`
+
+For full setup instructions, see the [Installation guide](https://documentation.achiefs.com/docs/installation-guide.html).
 
 ---
 
