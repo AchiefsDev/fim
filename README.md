@@ -2,7 +2,6 @@
 
 [![Chat - Join us on Slack](https://img.shields.io/badge/Slack-join%20us%20-blue?logo=slack)](https://join.slack.com/t/filemonitor/shared_invite/zt-1au9t0hf4-yOsW6D3pGPqzzYsAJt9Dvg)
 [![License](https://img.shields.io/github/license/Achiefs/fim)](https://github.com/Achiefs/fim/blob/main/LICENSE)
-[![Build](https://img.shields.io/badge/version-0.6.4-059669?logo=rust&logoColor=white)](https://www.rust-lang.org)
 [![Coverage](https://coveralls.io/repos/github/Achiefs/fim/badge.svg)](https://coveralls.io/github/Achiefs/fim)
 [![Docs](https://img.shields.io/badge/Web-Docs-brightgreen)](https://documentation.achiefs.com/)
 [![Platform](https://img.shields.io/badge/platform-Linux%20|%20macOS%20|%20Windows-lightgrey)](https://github.com/Achiefs/fim)
@@ -125,4 +124,4 @@ We welcome feedback and contributions!
 
 ## 📄 License
 
-This project is distributed under the terms of the [MIT License](https://github.com/Achiefs/fim/blob/main/LICENSE).
+This project is distributed under the terms of the [GNU General Public License v3](https://github.com/Achiefs/fim/blob/main/LICENSE).
