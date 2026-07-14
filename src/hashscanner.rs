@@ -6,6 +6,7 @@ use crate::appconfig::AppConfig;
 use crate::hashevent;
 use crate::hashevent::HashEvent;
 use crate::utils;
+use yaml_rust::yaml::Yaml;
 
 use walkdir::WalkDir;
 use log::*;
@@ -20,13 +21,36 @@ mod test;
 
 // ----------------------------------------------------------------------------
 
+/// Check if a filename matches any ignore rule in the given config array.
+/// Mirrors the ignore logic from appconfig.rs match_ignore().
+fn path_matches_ignore(path: &str, config_array: Vec<Yaml>) -> bool {
+    let filename = Path::new(path)
+        .file_name()
+        .and_then(|f| f.to_str())
+        .unwrap_or("");
+
+    config_array.iter().any(|entry| {
+        entry["ignore"].as_vec().map_or(false, |ignore_list| {
+            ignore_list.iter().any(|ignore| {
+                filename.contains(ignore.as_str().unwrap())
+            })
+        })
+    })
+}
+
+// ----------------------------------------------------------------------------
+
 pub fn scan_path(cfg: AppConfig, root: String) {
     let db = db::DB::new(&cfg.hashscanner_file);
     for res in WalkDir::new(root) {
         let entry = res.unwrap();
         let metadata = entry.metadata().unwrap();
         let path = entry.path();
-        if metadata.clone().is_file(){
+        if metadata.clone().is_file() {
+            if path_matches_ignore(path.to_str().unwrap(), cfg.monitor.clone()) {
+                debug!("HashScanner: path '{}' ignored, skipping.", path.display());
+                continue;
+            }
             let dbfile = DBFile::new(cfg.clone(), path.to_str().unwrap(), None);
             db.insert_file(dbfile);
         }
@@ -46,7 +70,11 @@ pub async fn check_path(cfg: AppConfig, root: String, first_scan: bool) {
         let metadata = entry.metadata().unwrap();
         let path = entry.path();
 
-        if metadata.clone().is_file(){
+        if metadata.clone().is_file() {
+            if path_matches_ignore(path.to_str().unwrap(), cfg.monitor.clone()) {
+                debug!("HashScanner: path '{}' ignored, skipping.", path.display());
+                continue;
+            }
             let result = db.get_file_by_path(String::from(path.to_str().unwrap()));
             match result {
                 Ok(dbfile) => {
@@ -107,6 +135,12 @@ pub async fn update_db(cfg: AppConfig, root: String, first_scan: bool) {
     let diff: Vec<_> = db_list.iter().filter(|item| !path_set.contains(&item.path)).collect();
 
     for file in diff {
+        // Skip files that match ignore rules — they should not be removed from DB
+        if path_matches_ignore(&file.path, cfg.monitor.clone()) {
+            debug!("HashScanner: path '{}' ignored, skipping delete.", file.path);
+            continue;
+        }
+
         let dbfile = DBFile {
             id: file.id.clone(),
             timestamp: file.timestamp.clone(),
