@@ -38,7 +38,7 @@ pub fn scan_path(cfg: AppConfig, root: String) {
 
 /// Check if a path should be ignored based on monitor/audit config rules.
 /// Mirrors the logic from monitor.rs and logreader.rs.
-fn path_should_be_processed(cfg: &AppConfig, path: &str, config_array: Vec<Yaml>) -> bool {
+fn path_should_be_processed(_cfg: &AppConfig, path: &str, config_array: Vec<Yaml>) -> bool {
     // Find matching config entry
     let matched = config_array.iter().find(|entry| {
         let entry_path = entry["path"].as_str().unwrap_or("");
